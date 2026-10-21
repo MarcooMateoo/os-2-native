@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "os2native"
+version = "0.1.0"
+description = "Extract OutSystems .osp/.oap/.oml packages into specification packages for native rebuilds"
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+os2native = "os2native.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
