@@ -29,8 +29,11 @@ os2native\
 ## 1. Open PowerShell in the project folder
 
 ```powershell
-cd "C:\Users\mbmateo\Desktop\Coding Agent Projects\OutSystems_2_Native\os2native"
+cd "<path where you cloned the repo>\os2native"
 ```
+
+Use the folder that contains `README.md` and `pyproject.toml`. Every command
+below is run from there.
 
 You don't need to activate anything: the commands call `.venv` directly.
 
