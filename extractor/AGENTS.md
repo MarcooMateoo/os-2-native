@@ -30,7 +30,7 @@ conversion plan. Read [README.md](README.md) for the user-facing overview.
 | `docs/oml-xml-knowledge-base.md` | XML tag reference: read it before changing a worker |
 | `docs/outsystems-context.md` | OutSystems concepts and how they map to native ones |
 | `docs/module-output-package-contract.md` | Output format of each module package |
-| `docs/templates/` | Templates for the stage 2–4 documents: `verification-report.md`, `product-specification.md`, `action-catalogue.md`, `CONVERTER_HANDOVER.md` |
+| `docs/templates/` | Templates for the stage 2–4 documents: `verification-report.md`, `product-specification.md`, `action-catalogue.md`, `CONVERTER_HANDOVER.md`, and `portable-spec/` (the optional portable product specification) |
 | `tests/` | pytest suite |
 | `../projects/<Project>/` | Outside the repo. One folder per project: `INPUTS/` (exports from OutSystems), `OUTPUT/` (extraction output, `deliverables/`, `SPECS/`) and `project.json` (the user's scope and accepted-missing decisions). See [Working folders](#working-folders). |
 
@@ -58,7 +58,7 @@ The extractor runs the first four stages of [`../STAGES.md`](../STAGES.md):
 |---|---|---|
 | 1 | [Extraction](#stage-1-extraction) | A clean extraction of the apps in scope |
 | 2 | [Verification](#stage-2-verification) | ◆ The user approves `OUTPUT\verification\verification-report.md` |
-| 3 | [Prototype](#stage-3-prototype) | Deliverables, a product specification, an action catalogue and a clickable prototype per app |
+| 3 | [Prototype](#stage-3-prototype) | Deliverables, a product specification, an action catalogue and a clickable prototype per app (plus a portable product specification if the user wants one) |
 | 4 | [Conversion plan](#stage-4-conversion-plan) | ◆ The user approves `OUTPUT\SPECS\CONVERTER_HANDOVER.md` |
 
 Stage 5 (conversion) belongs to the converter agents in `../converter/`,
@@ -313,6 +313,13 @@ Start only when the verification report is approved for the current run.
    - Mobile apps are detected from the module (only they have a splash
      screen); if one is misdetected, list it in `stack.mobile.modules`.
 
+   In the same message, unless `project.json` already has the answer, ask:
+   **"Do you also need a portable product specification: a
+   technology-neutral set of Markdown documents you can share with other
+   teams or platforms?"** Record the answer in `project.json` as
+   `"portable_spec": {"enabled": true}` (or `false`). Ask once per project;
+   the user can change it later. If it's `false`, skip step 6.
+
 2. **Generate the deliverables**
    ```powershell
    .venv\Scripts\python scripts\generate_db_schema.py ..\projects\<Project>\OUTPUT
@@ -410,6 +417,77 @@ Start only when the verification report is approved for the current run.
    before stage 4. The next step you give: review the spec and prototype,
    then the conversion plan (stage 4).
 
+6. **Portable product specification (only if the user wants one).** This is
+   a technology-neutral set of Markdown documents about the product, which
+   the user can share with other teams or platforms that know nothing about
+   OutSystems or the current build. The answer to "Do you need one?" is in
+   `project.json` (`portable_spec`, see step 1). If it is `false`, skip this
+   step.
+
+   Write it to `OUTPUT\SPECS\<App>\portable-spec\` from the templates in
+   [`docs/templates/portable-spec/`](docs/templates/portable-spec/):
+
+   | File | Written from |
+   |---|---|
+   | `README.md` | What the product is, the reading order, the IDs |
+   | `PRD.md` | The product specification: goals, roles, features as user stories with acceptance criteria, journeys, business rules, quality requirements, out of scope, open questions |
+   | `domain-model.md` | Entities, static entities and relationships (`data\`, `deliverables\db-schema\`), as business concepts and reference data |
+   | `screens-and-navigation.md` | Screens, navigation and visibility by role (`interfaces\`, the prototype), described in words |
+   | `behaviour.md` | **Every** entry of the action catalogue, as behaviour `B1`, `B2`…: trigger, inputs, steps, rules, errors, result |
+   | `integrations.md` | Consumed and exposed APIs (`deliverables\api-catalog\`), by the external system's business role |
+   | `configuration-and-jobs.md` | Site properties (`deliverables\configuration\site-properties.md`), timers and emails |
+   | `glossary.md` | The business terms used |
+
+   **Write it for a reader who has never seen OutSystems or the current app:**
+   - **No platform terms.** Translate them:
+
+     | OutSystems | In the portable specification |
+     |---|---|
+     | Entity, attribute | business concept (e.g. Order), field |
+     | Static entity | reference data (a fixed list of values) |
+     | Entity identifier, foreign key | reference to <concept> |
+     | Aggregate, Advanced SQL | find / list records where … |
+     | Server, service or client action, screen action | behaviour `B<n>` (what it does) |
+     | Screen, block | screen, reusable part of a screen |
+     | Site property | setting |
+     | Timer, BPT process | scheduled job, background process |
+     | Role, `Check<Role>Role` | role, "only <role> may …" |
+     | `NullIdentifier()`, `NullDate()`, empty text | "no value" |
+     | Exception handler, raise exception | "when something goes wrong", error |
+     | Consumed or exposed REST/SOAP | external system, operation |
+   - **No implementation details:** no module names, no library, plugin,
+     Forge component, framework, language or database names, no colours,
+     fonts, logos, icons or theme names, and no OutSystems UI patterns.
+     Describe the layout in words ("a list with filters").
+   - **External systems by their role** ("HR system", "corporate single
+     sign-on provider"). Name a real product only when the new product
+     must keep integrating with that specific system, and only after the
+     user agrees; record it in `SPECS\<App>\portable-spec-allow.txt` with
+     the reason.
+   - **Same IDs** as the product specification (`F`, `A`, `J`, `BR`, `Q`),
+     plus `B<n>` for behaviours. Record which action each `B<n>` comes from
+     in `SPECS\<App>\portable-spec-trace.md` (next to the folder, never
+     inside it), from the template.
+   - **No secrets, personal data or customer records:** settings that are
+     secrets are marked secret without a value; people are named by role.
+   - **Markdown only** in `portable-spec\`.
+   - **Don't link to the prototype**: it carries the current branding.
+
+   Then check it, and fix everything it finds before showing it:
+   ```powershell
+   .venv\Scripts\python scripts\check_portable_spec.py ..\projects\<Project>\OUTPUT --app <App>
+   ```
+   It flags platform terms, module, theme, library and technology names,
+   colours, fonts, emails and secret values, and anything missing: every
+   ID of the product specification and every action of the action
+   catalogue must be covered. It exits with 1 until the pack is clean.
+
+   **The user reviews it** with the product specification. On approval,
+   set the status line in `portable-spec\README.md` to
+   `Approved on <date>` (no run id or tool name: the pack is shared
+   outside). If the project is re-extracted, update it with the product
+   specification and check it again.
+
 ## Stage 4: Conversion plan
 
 Goal: one document that tells the converter what to build, in what order,
@@ -506,6 +584,11 @@ the converter starts.**
    - **Runtime values to collect:** <site property values per environment,
      timer schedules, role assignments>, needed by <iteration>
    - **Open questions blocking I0/I1:** <Q-ids>
+
+   **Portable product specification** (only if the user asked for one):
+   `..\projects\<Project>\OUTPUT\SPECS\<App>\portable-spec\`, approved on <date>.
+   Share that folder as it is; `portable-spec-trace.md` and
+   `portable-spec-allow.txt` next to it are not for sharing.
 
    **If you re-extract <Project>,** come back to the extractor first: the
    approvals are tied to run `<run id>`.
@@ -622,16 +705,18 @@ apart from the code.
   mix their modules.
 - **`../projects/<Project>/project.json`** holds the user's decisions for the
   project: `scope` (apps being migrated), `accepted_missing` (missing
-  dependencies they said aren't needed, with the reason) and `stack` (every
-  layer of the target stack, see stage 3). Write it only with the user's
+  dependencies they said aren't needed, with the reason), `stack` (every
+  layer of the target stack, see stage 3) and `portable_spec` (whether they
+  want a portable product specification). Write it only with the user's
   answers, except the TECH_STACK.md defaults that `project_stack.py init`
   fills in; keep their wording for reasons, and never delete it.
 - **`../projects/<Project>/OUTPUT/verification/`** holds the stage 2 report
   for the current run. You write it; a re-extraction makes it out of date.
 - **`../projects/<Project>/OUTPUT/SPECS/`** is the exception: it holds
   hand-reviewed documents that are kept across runs: per app,
-  `SPECS/<App>/product-specification.md`, `SPECS/<App>/action-catalogue.md`
-  and `SPECS/<App>/prototype/` (stage 3), and for the project `SPECS/CONVERTER_HANDOVER.md` (stage 4). No
+  `SPECS/<App>/product-specification.md`, `SPECS/<App>/action-catalogue.md`,
+  `SPECS/<App>/prototype/` and, if requested, `SPECS/<App>/portable-spec/`
+  with its trace and allow files (stage 3), and for the project `SPECS/CONVERTER_HANDOVER.md` (stage 4). No
   command writes or deletes them: update them by editing, and keep
   "(inferred)" markers, IDs and the open-questions list accurate. Don't
   delete them when cleaning `OUTPUT`.

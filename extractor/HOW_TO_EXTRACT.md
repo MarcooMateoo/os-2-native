@@ -113,7 +113,8 @@ The agent then:
    you have it open, and waits for your approval.
 4. **Writes the deliverables, the product specification, the action
    catalogue and a prototype** (stage 3), after asking about the target stack
-   choices that are still open.
+   choices that are still open and whether you want a portable product
+   specification to share with other teams or platforms.
 5. **Writes the conversion plan** (`CONVERTER_HANDOVER.md`, stage 4), waits
    for your approval, and ends with a **Next steps** message for the
    converter.
@@ -468,6 +469,40 @@ The agent writes, for each app in scope that has screens:
 Go through them and tell the agent what's wrong or missing; it updates them
 before the plan.
 
+### Portable product specification (optional)
+
+At the start of stage 3 the agent asks whether you also need a **portable
+product specification**: a technology-neutral set of Markdown documents
+about the product that you can share with other teams or platforms. Your
+answer is saved in `project.json` (`"portable_spec": {"enabled": true}`).
+If you say yes, it writes `OUTPUT\SPECS\<App>\portable-spec\`:
+
+| File | Contents |
+|---|---|
+| `README.md` | What the product is and how to read the documents |
+| `PRD.md` | Goals, roles, features as user stories with acceptance criteria, journeys, business rules, quality requirements, open questions |
+| `domain-model.md` | The business information the product manages |
+| `screens-and-navigation.md` | Every screen in words: what it shows, what users can do, who sees what |
+| `behaviour.md` | What happens behind every user action and process, step by step |
+| `integrations.md` | External systems, by their business role |
+| `configuration-and-jobs.md` | Settings (secrets marked, never shown), scheduled jobs, notifications |
+| `glossary.md` | Business terms |
+
+The documents never mention OutSystems or how the current app is built: no
+platform terms, module names, libraries, technologies, colours, fonts or
+logos, and no secrets or personal data. The agent checks this before showing
+them to you:
+
+```powershell
+.venv\Scripts\python scripts\check_portable_spec.py ..\projects\MyProject\OUTPUT --app <App>
+```
+
+Two files next to the folder stay private: `portable-spec-trace.md` (which
+part of the current app each behaviour comes from) and
+`portable-spec-allow.txt` (names you allowed on purpose, such as an external
+system the new product must keep using). Share only the `portable-spec\`
+folder, after you approve it.
+
 ## Stage 4: Conversion plan
 
 The agent writes `OUTPUT\SPECS\CONVERTER_HANDOVER.md`
@@ -505,6 +540,8 @@ you:
       for the chosen back end.
 - [ ] The product specification, action catalogue and prototype of each app
       have been reviewed; the catalogue documents every server and client action.
+- [ ] If you asked for a portable product specification: `check_portable_spec.py`
+      reports it clean and you have approved it.
 
 **Review the handover and approve it.** The converter doesn't start until
 you do. If you re-extract later, the approvals no longer match the run: the

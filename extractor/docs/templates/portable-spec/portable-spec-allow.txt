@@ -1,0 +1,4 @@
+# NOT SHARED. Copy to projects/<Project>/OUTPUT/SPECS/<App>/portable-spec-allow.txt.
+# Terms the user allowed in the portable specification, one per line, with the reason.
+# Use it only for external systems the new product must keep integrating with.
+# Okta  # the new product must keep using this identity provider (user, <date>)

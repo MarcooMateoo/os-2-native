@@ -17,7 +17,7 @@ approves.
 |---|---|---|---|---|---|
 | 1 | **Extraction** | extractor | Extract the package; inventory and dependencies limited to the project's scope (`project.json`). | `OUTPUT/` (`inventory.json`, `inventory-details.*`, `dependency-check.json`, `extraction/`) | No ERROR, no `unknown` dependency (or accepted by the user) |
 | 2 | **Verification** | extractor | Check the extraction against the live modules through the Service Studio MCP; the user verifies. | `OUTPUT/verification/verification-report.md` | ◆ **User approves the verification** |
-| 3 | **Prototype** | extractor | Generate the deliverables, write the product specification per app, build a clickable prototype from them. | `OUTPUT/deliverables/`, `OUTPUT/SPECS/<App>/product-specification.md`, `OUTPUT/SPECS/<App>/prototype/` | Shown to the user for feedback |
+| 3 | **Prototype** | extractor | Generate the deliverables, write the product specification per app, build a clickable prototype from them. | `OUTPUT/deliverables/`, `OUTPUT/SPECS/<App>/product-specification.md`, `OUTPUT/SPECS/<App>/prototype/`; optionally `OUTPUT/SPECS/<App>/portable-spec/` (a technology-neutral product specification to share) | Shown to the user for feedback |
 | 4 | **Conversion plan** | extractor | Write the conversion plan and handover for the converter. | `OUTPUT/SPECS/CONVERTER_HANDOVER.md` | ◆ **User approves the handover** |
 | 5 | **Conversion** | converter | Intake, then STARTER → BA → ARCHITECT → DEV → QA, repeated per iteration of the plan until the app is rebuilt. | `projects/<Project>/converted/` | User review at each role's gate and after each iteration |
 

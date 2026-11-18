@@ -144,6 +144,7 @@ delete).
 | `collect_mcp_snapshot.py` | Copies a module open in Service Studio (MCP snapshot) to `INPUTS\mcp\<Module>.oml` |
 | `generate_api_catalog.py` | API catalog, coverage matrix, OpenAPI stubs → `deliverables\api-catalog\` |
 | `project_stack.py` | Shows, fills in (`init`) and records (`set`) a project's complete target stack in `project.json`: every TECH_STACK.md layer, with the open decisions listed |
+| `check_portable_spec.py` | Checks the optional portable product specification (`SPECS\<App>\portable-spec\`) before it's shared: no platform terms, module or library names, technologies, colours, fonts, emails or secrets, and every feature, rule and action covered |
 | `generate_site_properties.py` | Every site property in one table (type, default, secret, target store, config key, runtime value collected or not) → `deliverables\configuration\`; masks secrets and personal-looking defaults. The handover copies it |
 | `generate_specs.py` | Backend/frontend specs per module for the target stack → `deliverables\specs\`. Reads `"stack"` from `project.json`; `--backend dotnet\|node` overrides the language. Web modules get React pages, mobile apps Expo Router screens; `index.md` lists every layer and the open decisions |
 | `target_stack.py` | The stack catalogue (every TECH_STACK.md layer, its default and options), and the OutSystems → C#/TypeScript type mapping used by the specs |
