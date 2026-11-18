@@ -36,9 +36,17 @@ user on Windows.
 
 ### 1. Get the repository
 
+With Git:
+
 ```powershell
 git clone <repository URL> OutSystems_2_Native
 ```
+
+Or from a ZIP file: unblock it first (right-click → **Properties** →
+**Unblock**, or `Unblock-File` in PowerShell), extract it to a short local
+path outside OneDrive, and rename the extracted folder to
+`OutSystems_2_Native`. The steps, how to update a ZIP copy and how to make a
+ZIP to share are in the [repository README](../README.md#2-get-the-repository-and-set-up-the-extractor-once).
 
 The repository looks like this. `projects\` is created by you, and it's
 git-ignored: customer packages and everything generated from them stay on

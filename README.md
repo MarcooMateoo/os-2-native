@@ -68,9 +68,33 @@ before you approve it. See
 
 ### 2. Get the repository and set up the extractor (once)
 
+Get the files in one of two ways.
+
+**With Git** (recommended: updates are a `git pull`):
+
 ```powershell
 git clone <repository URL> OutSystems_2_Native
 ```
+
+**From a ZIP file** (no Git needed):
+
+1. Get the ZIP: on the repository page, **Code → Download ZIP**, or a ZIP a
+   colleague sent you (see [Sharing the repository as a ZIP](#sharing-the-repository-as-a-zip)).
+2. **Unblock it before extracting.** Right-click the ZIP → **Properties** →
+   tick **Unblock** → **OK**, or run:
+   ```powershell
+   Unblock-File .\os-2-native-main.zip
+   ```
+   Windows marks downloaded files as untrusted, and that mark would carry
+   over to the decoder in `extractor\bin\oml-utilities\`.
+3. Extract it to a short local path, e.g. `C:\Work\`. Avoid OneDrive or
+   other synced folders: your projects will hold customer data.
+4. Rename the extracted folder (e.g. `os-2-native-main`) to
+   `OutSystems_2_Native`, so the paths in the guides match. Check that it
+   directly contains `README.md`, `extractor\` and `converter\`, not
+   another folder with the same name inside.
+
+Then set up the extractor:
 
 ```powershell
 cd OutSystems_2_Native\extractor
@@ -83,6 +107,11 @@ py -m venv .venv
 ```powershell
 .venv\Scripts\python -m pip install -e ".[dev]"
 ```
+
+**Updating a ZIP copy:** download the new ZIP and extract it to a new
+folder. Move your `projects\` folder into it (it's never in the ZIP), then
+run the `py -m venv .venv` and `pip install` lines again in the new
+`extractor\` folder. Delete the old folder once everything works.
 
 ### 3. Create a project and add your exports
 
@@ -126,6 +155,20 @@ iteration:
 
 Then ARCHITECT, DEV and QA in turn; you accept each iteration before the
 next one starts. See [converter/README.md](converter/README.md).
+
+## Sharing the repository as a ZIP
+
+To send the repository to someone without Git access, make the ZIP from Git,
+so it holds only the committed files: no `projects\` (customer data), no
+`.venv`, no generated output. From the repository folder:
+
+```powershell
+git archive --format=zip --prefix=OutSystems_2_Native/ -o ..\OutSystems_2_Native.zip HEAD
+```
+
+The ZIP extracts to an `OutSystems_2_Native` folder, ready to use. Don't zip
+the folder with Windows' **Send to → Compressed folder**: that would include
+`projects\` and your local settings.
 
 ## Rules for project data
 
